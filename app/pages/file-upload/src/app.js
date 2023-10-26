@@ -2,21 +2,17 @@ import Clock from './deps/clock.js';
 import View from './view.js';
 
 const view = new View();
-
-fileUpload.addEventListener('change', onChange);
-btnUploadVideo.addEventListener('click', () => {
-  // trigger file input
-  fileUpload.click();
-});
+const clock = new Clock();
 let took = '';
 
-function parseBytesIntoMBAndGB(bytes) {
-  const mb = bytes / (1024 * 1024);
-  // if mb is greater than 1024, then convert to GB
-  if (mb > 1024) {
-    // rount to 2 decimal places
-    return `${Math.round(mb / 1024)}GB`;
-  }
-  return `${Math.round(mb)}MB`;
-}
-const clock = new Clock();
+view.configureOnFileChange((file) => {
+  clock.start((time) => {
+    took = time;
+    view.updateElapsedTime(`Process started ${time}`);
+  });
+
+  setTimeout(() => {
+    clock.stop();
+    view.updateElapsedTime(`Process took ${took.replace('ago', '')}`);
+  }, 5000);
+});

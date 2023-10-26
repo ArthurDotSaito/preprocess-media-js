@@ -8,27 +8,46 @@ export default class View {
   #elapsed = document.getElementById('elapsed');
   #canvas = document.getElementById('preview-144p');
 
+  constructor() {
+    this.configureBtnUploadClick();
+  }
+
   configureOnFileChange(fn) {
     this.#fileUpload.addEventListener('change', this.onChange(fn));
   }
 
-  onChange(e) {
-    const file = e.target.files[0];
-    const { name, size } = file;
-    txtfileName.innerText = name;
-    fileSize.innerText = parseBytesIntoMBAndGB(size);
-
-    fileInfo.classList.remove('hide');
-    fileUploadWrapper.classList.add('hide');
-
-    clock.start((time) => {
-      took = time;
-      elapsed.innerText = `Process started ${time}`;
+  configureBtnUploadClick() {
+    this.#btnUploadVideo.addEventListener('click', () => {
+      // trigger file input
+      fileUpload.click();
     });
+  }
 
-    setTimeout(() => {
-      clock.stop();
-      elapsed.innerText = `Process took ${took.replace('ago', '')}`;
-    }, 5000);
+  parseBytesIntoMBAndGB(bytes) {
+    const mb = bytes / (1024 * 1024);
+    // if mb is greater than 1024, then convert to GB
+    if (mb > 1024) {
+      // rount to 2 decimal places
+      return `${Math.round(mb / 1024)}GB`;
+    }
+    return `${Math.round(mb)}MB`;
+  }
+
+  onChange(fn) {
+    return (e) => {
+      const file = e.target.files[0];
+      const { name, size } = file;
+      fn(file);
+
+      this.#txtfileName.innerText = name;
+      this.#fileSize.innerText = this.parseBytesIntoMBAndGB(size);
+
+      this.#fileInfo.classList.remove('hide');
+      this.#fileUploadWrapper.classList.add('hide');
+    };
+  }
+
+  updateElapsedTime(text) {
+    this.#elapsed.innerText = text;
   }
 }
