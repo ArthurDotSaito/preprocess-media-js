@@ -1,3 +1,5 @@
+import VideoProcessor from './videoProcessor.js';
+
 const qvgaConstraints = {
   width: 320,
   height: 240,
@@ -27,6 +29,11 @@ const encoderConfig = {
   avc: { format: 'annexb' }, */
 };
 
-onmessage = ({ data }) => {
-  self.postMessage('worker here!');
+const videoProcessor = new VideoProcessor();
+
+onmessage = async ({ data }) => {
+  await videoProcessor.start({ file: data.file, encorderConfig });
+  setTimeout(() => {
+    self.postMessage('worker here!');
+  }, 2000);
 };
