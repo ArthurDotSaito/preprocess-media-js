@@ -9,7 +9,6 @@ worker.onmessage = ({ data }) => {
   if (data.status !== 'done') return;
   clock.stop();
   view.updateElapsedTime(`Process took ${took.replace('ago', '')}`);
-  console.log('View has received', data);
 };
 
 let took = '';
@@ -32,4 +31,4 @@ async function fakeFetch() {
   Reflect.defineProperty(event, 'target', { value: { files: [file] } });
 }
 
-fakeFetch();
+/* fakeFetch(); */
