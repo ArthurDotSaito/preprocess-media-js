@@ -11,6 +11,10 @@ worker.onmessage = ({ data }) => {
   view.updateElapsedTime(`Process took ${took.replace('ago', '')}`);
 };
 
+worker.onerror = (error) => {
+  console.error('Worker error', error);
+};
+
 let took = '';
 
 view.configureOnFileChange((file) => {

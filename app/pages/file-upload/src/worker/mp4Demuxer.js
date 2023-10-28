@@ -25,7 +25,23 @@ export default class Mp4Demuxer {
       console.log('Error MP4 Demuxer', error);
     };
 
-    this.#init(stream);
+    return this.#init(stream);
   }
-  #init(stream) {}
+
+  /**
+   *
+   * @param {ReadableStream} stream
+   * @returns Promise<void>
+   *
+   */
+
+  #init(stream) {
+    const consumeFile = new WritableStream({
+      /**@param {Uint8Array} chunk */
+      write: (chunk) => {},
+      close: () => {},
+    });
+
+    return stream.pipeTo(consumeFile);
+  }
 }
