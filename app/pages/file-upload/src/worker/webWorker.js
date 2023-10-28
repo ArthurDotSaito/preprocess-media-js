@@ -1,3 +1,4 @@
+import Mp4Demuxer from './mp4Demuxer.js';
 import VideoProcessor from './videoProcessor.js';
 
 const qvgaConstraints = {
@@ -30,9 +31,16 @@ const encoderConfig = {
 };
 
 const videoProcessor = new VideoProcessor();
+const mp4Demuxer = new Mp4Demuxer({ mp4Demuxer });
 
 onmessage = async ({ data }) => {
-  await videoProcessor.start({ file: data.file, encorderConfig });
+  await videoProcessor.start({
+    file: data.file,
+    encorderConfig,
+    sendMessage(message) {
+      self.postMessage(message);
+    },
+  });
   setTimeout(() => {
     self.postMessage('worker here!');
   }, 2000);
