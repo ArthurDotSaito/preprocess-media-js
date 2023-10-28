@@ -63,6 +63,7 @@ export default class Mp4Demuxer {
       codedHeight: track.video.height,
       codedWidth: track.video.width,
       description: this.#description(track),
+      durationSecs: info.duration / info.timescale,
     });
     this.#file.setExtractionOptions(track.id);
     this.#file.start();
