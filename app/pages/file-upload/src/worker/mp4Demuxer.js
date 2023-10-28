@@ -1,4 +1,4 @@
-import { createFile } from '../deps/mp4box.0.5.2';
+import { DataStream, createFile } from '../deps/mp4box.0.5.2';
 
 export default class Mp4Demuxer {
   #onConfig;
@@ -19,13 +19,9 @@ export default class Mp4Demuxer {
 
     this.#file = createFile();
 
-    this.#file.onReady = (args) => {
-      debugger;
-    };
+    this.#file.onReady = this.#onReady.bind(this);
 
-    this.#file.onSamples = (args) => {
-      debugger;
-    };
+    this.#file.onSamples = this.#onSamples.bind(this);
 
     this.#file.onError = (error) => {
       console.log('Error MP4 Demuxer', error);
@@ -58,5 +54,35 @@ export default class Mp4Demuxer {
     });
 
     return stream.pipeTo(consumeFile);
+  }
+
+  #onReady(info) {
+    const track = info.videoTracks;
+    this.#onConfig({
+      codec: track.codec,
+      codedHeight: track.video.height,
+      codedWidth: track.video.width,
+      description: this.#description(track),
+    });
+    this.#file.setExtractionOptions(track.id);
+    this.#file.start();
+  }
+
+  #onSamples(trackId, ref, samples) {
+    debugger;
+  }
+
+  #description(track) {
+    const track = this.#file.getTrackById(track.id);
+    for (const entry of track.mdia.minf.stbl.stsd.entries) {
+      const box = entry.avcC || entry.hvcC || entry.vpcC || entry.av1C;
+      if (box) {
+        const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
+        box.write(stream);
+        return new Uint8Array(stream.buffer, 8);
+      }
+
+      throw new Error('avcC, hvcC, vpcC, av1C not found');
+    }
   }
 }
