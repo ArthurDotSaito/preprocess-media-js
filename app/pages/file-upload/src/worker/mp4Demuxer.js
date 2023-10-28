@@ -18,9 +18,15 @@ export default class Mp4Demuxer {
     this.#onChunk = onChunk;
 
     this.#file = createFile();
+
     this.#file.onReady = (args) => {
       debugger;
     };
+
+    this.#file.onSamples = (args) => {
+      debugger;
+    };
+
     this.#file.onError = (error) => {
       console.log('Error MP4 Demuxer', error);
     };
@@ -36,10 +42,19 @@ export default class Mp4Demuxer {
    */
 
   #init(stream) {
+    let _offSet = 0;
     const consumeFile = new WritableStream({
       /**@param {Uint8Array} chunk */
-      write: (chunk) => {},
-      close: () => {},
+      write: (chunk) => {
+        const copy = chunk.buffer;
+        copy.fileStart = _offSet;
+        this.#file.appendBuffer(copy);
+
+        _offSet += chunk.length;
+      },
+      close: () => {
+        this.#file.flush();
+      },
     });
 
     return stream.pipeTo(consumeFile);
