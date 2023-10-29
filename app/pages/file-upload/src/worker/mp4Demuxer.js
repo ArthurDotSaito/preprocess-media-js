@@ -70,7 +70,16 @@ export default class Mp4Demuxer {
   }
 
   #onSamples(trackId, ref, samples) {
-    debugger;
+    for (const sample of samples) {
+      this.#onChunk(
+        new EncodedVideoChunk({
+          type: sample.is_sync ? 'key' : 'delta',
+          timestamp: (1e6 * sample.cts) / sample.timescale,
+          duration: (1e6 * sample.duration) / sample.timescale,
+          data: sample.data,
+        }),
+      );
+    }
   }
 
   #description(track) {
