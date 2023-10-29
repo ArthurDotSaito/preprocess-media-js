@@ -36,6 +36,7 @@ const mp4Demuxer = new Mp4Demuxer({ mp4Demuxer });
 onmessage = async ({ data }) => {
   await videoProcessor.start({
     file: data.file,
+    canvas: data.canvas,
     encorderConfig,
     sendMessage(message) {
       self.postMessage(message);

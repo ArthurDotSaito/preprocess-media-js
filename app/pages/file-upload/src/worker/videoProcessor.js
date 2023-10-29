@@ -42,9 +42,15 @@ export default class VideoProcessor {
     });
   }
 
-  async start({ file, encorderConfig }) {
+  async start({ file, renderFrame, encorderConfig }) {
     const stream = file.stream;
     const fileName = file.name.split('/').pop().replace('mp4', '');
-    await this.mp4Decoder(encorderConfig, stream);
+    await this.mp4Decoder(encorderConfig, stream).pipeTo(
+      new WritableStream({
+        write(frame) {
+          renderFrame(frame);
+        },
+      }),
+    );
   }
 }
