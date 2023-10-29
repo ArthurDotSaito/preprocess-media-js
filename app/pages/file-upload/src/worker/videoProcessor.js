@@ -25,19 +25,26 @@ export default class VideoProcessor {
           },
         });
 
-        this.#mp4Demuxer.run(stream, {
-          onConfig(config) {
-            decoder.configure(config);
-          },
+        return this.#mp4Demuxer
+          .run(stream, {
+            onConfig(config) {
+              decoder.configure(config);
+            },
 
-          /**
-           * @param {EncodedVideoChunk} chunk
-           */
-          onChunk(chunk) {
-            decoder.decode(chunk);
-            debugger;
-          },
-        });
+            /**
+             * @param {EncodedVideoChunk} chunk
+             */
+            onChunk(chunk) {
+              decoder.decode(chunk);
+              debugger;
+            },
+          })
+          .then(() => {
+            setTimeout(() => {
+              controller.close();
+            }),
+              3000;
+          });
       },
     });
   }
